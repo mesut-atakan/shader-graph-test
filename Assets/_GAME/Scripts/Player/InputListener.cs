@@ -31,6 +31,9 @@ namespace Aventra.Game
             _lookAction.performed += OnLookPerformed;
             _jumpAction.performed += OnJumpPerformed;
             _interactAction.performed += OnInteractPerformed;
+
+            _moveAction.canceled += OnMoveCanceled;
+            _lookAction.canceled += OnLookCanceled;
         }
 
         void OnEnable()
@@ -55,6 +58,9 @@ namespace Aventra.Game
             _lookAction.performed -= OnLookPerformed;
             _jumpAction.performed -= OnJumpPerformed;
             _interactAction.performed -= OnInteractPerformed;
+
+            _moveAction.canceled -= OnMoveCanceled;
+            _lookAction.canceled -= OnLookCanceled;
         }
 
         private void OnInteractPerformed(InputAction.CallbackContext context)
@@ -79,6 +85,16 @@ namespace Aventra.Game
         {
             MoveValue = context.ReadValue<Vector2>().normalized;
             Debug.Log($"Move Value {MoveValue}");
+        }
+
+        private void OnLookCanceled(InputAction.CallbackContext context)
+        {
+            LookValue = Vector2.zero;
+        }
+
+        private void OnMoveCanceled(InputAction.CallbackContext context)
+        {
+            MoveValue = Vector2.zero;
         }
     }
 }
