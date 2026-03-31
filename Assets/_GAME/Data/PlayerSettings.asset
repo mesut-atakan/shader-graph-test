@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f1f613cb41758a41a2806c9c06b5d01, type: 3}
   m_Name: PlayerSettings
   m_EditorClassIdentifier: 
-  <MouseSensitivity>k__BackingField: 5
+  <MouseSensitivity>k__BackingField: 20
   <CharcterMoveSpeed>k__BackingField: 4
   <CharacterSprintSpeed>k__BackingField: 7
   <CharacterJumpForce>k__BackingField: 4
+  <HorizontalDeceleration>k__BackingField: 5
+  <VerticalDeceleration>k__BackingField: 5
+  <CameraUpAxisClamp>k__BackingField: 90
+  <CameraDownAxisClamp>k__BackingField: -90
+  <CameraRotationSmoothTime>k__BackingField: 0.15
+  <InteractRange>k__BackingField: 23.1
