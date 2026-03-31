@@ -7,8 +7,10 @@ namespace Aventra.Game
     {
         [SerializeField] private InputListener inputListener;
         [SerializeField] private PlayerSettings playerSettings;
+        [SerializeField] private CharacterInteractController interactController;
         [SerializeField] private Transform characterBody;
 
+        private CharacterStats _characterStats = new CharacterStats();
         private Camera _camera;
         private float _xAxisClamp = 0.0f;
         private float _targetXAxisClamp = 0.0f;
@@ -17,6 +19,8 @@ namespace Aventra.Game
         private float _yRotationVelocity;
         private float _currentHorizontalSpeed;
         private float _currentVerticalSpeed;
+
+        public float CurrentVelocity => new Vector3(_currentHorizontalSpeed, 0f, _currentVerticalSpeed).magnitude;
 
         void Awake()
         {
@@ -46,6 +50,18 @@ namespace Aventra.Game
             float targetSpeed = inputListener.IsSprint
                 ? playerSettings.CharacterSprintSpeed
                 : playerSettings.CharcterMoveSpeed;
+
+            float minSpeed = inputListener.IsSprint
+                ? playerSettings.MinSprintSpeed
+                : playerSettings.MinMoveSpeed;
+
+            if (interactController.HoldingHoldable != null)
+            {
+                float totalMass = interactController.HoldingHoldable.Mass;
+                float strength = _characterStats.Strength;
+                float multipler = strength / (strength + totalMass);
+                targetSpeed = Mathf.Max(minSpeed, targetSpeed * multipler);
+            }
 
             float targetH = inputListener.MoveValue.x * targetSpeed;
             float targetV = inputListener.MoveValue.y * targetSpeed;

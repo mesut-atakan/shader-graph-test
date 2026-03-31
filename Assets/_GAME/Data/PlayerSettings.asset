@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: PlayerSettings
   m_EditorClassIdentifier: 
   <MouseSensitivity>k__BackingField: 20
+  <InverMouseY>k__BackingField: 0
+  <InverMouseX>k__BackingField: 0
   <CharcterMoveSpeed>k__BackingField: 4
   <CharacterSprintSpeed>k__BackingField: 7
   <CharacterJumpForce>k__BackingField: 4
@@ -22,3 +24,5 @@ MonoBehaviour:
   <CameraDownAxisClamp>k__BackingField: -90
   <CameraRotationSmoothTime>k__BackingField: 0.15
   <InteractRange>k__BackingField: 23.1
+  <HoldObjectDistance>k__BackingField: 2
+  <HoldObjectTargetDelta>k__BackingField: 5

@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -9,9 +10,10 @@ namespace Aventra.Game
         [SerializeField] private InputListener InputListener;
 
         private Camera _camera;
-        private IHoldable _lookingHoldable;
-        private IHoldable _holdingHoldable;
         private Vector2 _screenCenter => new Vector2(Screen.width / 2f, Screen.height / 2f);
+
+        public IHoldable LookingHoldable { get; private set; }
+        public IHoldable HoldingHoldable { get; private set; }
 
 
         void Awake()
@@ -22,13 +24,18 @@ namespace Aventra.Game
         void OnEnable()
         {
             InputListener.OnInteract += Interact;
-            InputListener.OnInteract += Release;
+            InputListener.OnRelease += Release;
         }
 
         void OnDisable()
         {
             InputListener.OnInteract -= Interact;
-            InputListener.OnInteract -= Release;
+            InputListener.OnRelease -= Release;
+        }
+
+        void Update()
+        {
+            HoldItemVisual();
         }
 
         void FixedUpdate()
@@ -43,35 +50,61 @@ namespace Aventra.Game
                 Debug.Log("Hit: " + hit.collider.name);
                 if (hit.collider.TryGetComponent(out IHoldable holdable))
                 {
-                    if (_holdingHoldable != null && _holdingHoldable == _lookingHoldable)
+                    if (HoldingHoldable != null && HoldingHoldable == LookingHoldable)
                         return;
 
-                    _lookingHoldable = holdable;
+                    LookingHoldable = holdable;
                 }
                 else
                 {
-                    _lookingHoldable = null;
+                    LookingHoldable = null;
                 }
+            }
+            else if (LookingHoldable != null)
+            {
+                LookingHoldable = null;
             }
         }
 
         private void Interact()
         {
-            if (_lookingHoldable == null)
+            if (LookingHoldable == null)
                 return;
 
-            _holdingHoldable.OnHold();
-            _holdingHoldable = _lookingHoldable;
-            _lookingHoldable = null;
+            if (HoldingHoldable != null)
+            {
+                HoldingHoldable.OnRelease();
+                HoldingHoldable = null;
+            }
+
+
+
+            HoldingHoldable = LookingHoldable;
+            HoldingHoldable.HoldObject = _camera.transform;
+            HoldingHoldable.OnHold();
+            LookingHoldable = null;
+            HoldItemVisual();
         }
 
         private void Release()
         {
-            if (_holdingHoldable == null)
+            if (HoldingHoldable == null)
                 return;
 
-            _holdingHoldable.OnRelease();
-            _holdingHoldable = null;
+            HoldingHoldable.OnRelease();
+            HoldingHoldable = null;
+        }
+
+        private void HoldItemVisual()
+        {
+            if (HoldingHoldable == null)
+                return;
+
+            HoldingHoldable.UseObject.position = Vector3.Lerp(
+                 HoldingHoldable.UseObject.position,
+                _camera.transform.position + _camera.transform.forward * playerSettings.HoldObjectDistance,
+                 playerSettings.HoldObjectTargetDelta * Time.deltaTime
+              );
         }
 
 #if UNITY_EDITOR
@@ -79,6 +112,9 @@ namespace Aventra.Game
         [ExecuteInEditMode]
         void OnDrawGizmos()
         {
+            if (_camera == null)
+                return;
+
             Gizmos.color = Color.red;
             Gizmos.DrawRay(_camera.ScreenPointToRay(_screenCenter).origin, _camera.ScreenPointToRay(_screenCenter).direction * playerSettings.InteractRange);
         }

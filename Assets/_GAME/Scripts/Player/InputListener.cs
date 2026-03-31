@@ -14,12 +14,14 @@ namespace Aventra.Game
         private InputAction _jumpAction;
         private InputAction _interactAction;
         private InputAction _sprintAction;
+        private InputAction _releaseAction;
 
         public Vector2 MoveValue { get; private set; }
         public Vector2 LookValue { get; private set; }
         public bool IsSprint { get; set; }
         public Action OnJump { get; set; }
         public Action OnInteract { get; set; }
+        public Action OnRelease { get; set; }
 
         void Awake()
         {
@@ -29,6 +31,7 @@ namespace Aventra.Game
             _jumpAction = _playerActionMap.FindAction("Jump");
             _interactAction = _playerActionMap.FindAction("Interact");
             _sprintAction = _playerActionMap.FindAction("Sprint");
+            _releaseAction = _playerActionMap.FindAction("Release");
 
             _moveAction.performed += OnMovePerformed;
             _moveAction.canceled += OnMoveCanceled;
@@ -42,6 +45,8 @@ namespace Aventra.Game
 
             _sprintAction.performed += OnSprintPerformed;
             _sprintAction.canceled += OnSprintCanceled;
+
+            _releaseAction.performed += OnReleasePerformed;
         }
 
         void OnEnable()
@@ -51,6 +56,7 @@ namespace Aventra.Game
             _jumpAction.Enable();
             _interactAction.Enable();
             _sprintAction.Enable();
+            _releaseAction.Enable();
         }
 
         void OnDisable()
@@ -60,6 +66,7 @@ namespace Aventra.Game
             _jumpAction.Disable();
             _interactAction.Disable();
             _sprintAction.Disable();
+            _releaseAction.Disable();
         }
 
         void OnDestroy()
@@ -76,6 +83,13 @@ namespace Aventra.Game
 
             _sprintAction.performed -= OnSprintPerformed;
             _sprintAction.canceled -= OnSprintCanceled;
+
+            _releaseAction.performed -= OnReleasePerformed;
+        }
+
+        private void OnReleasePerformed(InputAction.CallbackContext context)
+        {
+            OnRelease?.Invoke();
         }
 
         private void OnSprintCanceled(InputAction.CallbackContext context)
